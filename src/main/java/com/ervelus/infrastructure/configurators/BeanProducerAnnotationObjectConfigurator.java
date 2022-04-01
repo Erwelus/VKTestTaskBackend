@@ -13,7 +13,7 @@ public class BeanProducerAnnotationObjectConfigurator implements ObjectConfigura
             BeanProducer annotation = method.getAnnotation(BeanProducer.class);
             if (annotation!=null){
                 try {
-                    context.putObject(method.invoke(t));
+                    context.putObject(method.getReturnType(), method.invoke(t));
                 } catch (ReflectiveOperationException e) {
                     System.err.println("Failed to invoke bean producer method");
                     e.printStackTrace();

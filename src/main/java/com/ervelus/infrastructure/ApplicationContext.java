@@ -34,9 +34,9 @@ public class ApplicationContext {
         return t;
     }
 
-    public <T> void putObject(T obj){
+    public <T> void putObject(Class type, T obj){
         if (!beans.containsKey(obj.getClass())){
-            beans.put(obj.getClass(), obj);
+            beans.put(type, obj);
         }
     }
 
