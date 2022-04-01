@@ -1,7 +1,9 @@
 package com.ervelus.infrastructure;
 
+import com.ervelus.infrastructure.annotations.PostConstruct;
 import com.ervelus.infrastructure.configurators.ObjectConfigurator;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,16 +27,23 @@ public class ObjectFactory {
     public <T> T createObject(Class<T> implClass) throws ReflectiveOperationException{
         T t = create(implClass);
         configure(t);
+        invokeInit(implClass, t);
         return t;
     }
 
     private <T> void configure(T t) {
-        configurators.forEach(objectConfigurator -> {
-            objectConfigurator.configure(t,context);
-        });
+        configurators.forEach(objectConfigurator -> objectConfigurator.configure(t,context));
     }
 
     private <T> T create(Class<T> implClass) throws ReflectiveOperationException {
         return implClass.getDeclaredConstructor().newInstance();
+    }
+
+    private <T> void invokeInit(Class<T> implClass, T t) throws ReflectiveOperationException {
+        for (Method method : implClass.getMethods()) {
+            if (method.isAnnotationPresent(PostConstruct.class)) {
+                method.invoke(t);
+            }
+        }
     }
 }
