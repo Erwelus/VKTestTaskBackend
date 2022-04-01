@@ -37,8 +37,10 @@ public class FriendListRepositoryImpl implements FriendListRepository {
     @Override
     public void updateFriendRequest(FriendListEntry entry) {
         try {
-            PreparedStatement preparedStatement = connector.getConnection().prepareStatement("update friend_vk set status = ?");
+            PreparedStatement preparedStatement = connector.getConnection().prepareStatement("update friend_vk set status = ? where owner = ? and friend = ?");
             preparedStatement.setString(1, entry.getStatus().toString());
+            preparedStatement.setInt(2, entry.getOwner().getId());
+            preparedStatement.setInt(3, entry.getFriend().getId());
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (SQLException e) {
@@ -49,7 +51,7 @@ public class FriendListRepositoryImpl implements FriendListRepository {
     @Override
     public void deleteFriendRequestByBothUsers(User userFrom, User userTo) {
         try {
-            PreparedStatement preparedStatement = connector.getConnection().prepareStatement("delete from friend_vk where owner = ? and another = ?");
+            PreparedStatement preparedStatement = connector.getConnection().prepareStatement("delete from friend_vk where owner = ? and friend = ?");
             preparedStatement.setInt(1, userFrom.getId());
             preparedStatement.setInt(2, userTo.getId());
             preparedStatement.executeUpdate();

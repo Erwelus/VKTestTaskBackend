@@ -4,11 +4,16 @@ import com.ervelus.infrastructure.annotations.Component;
 import com.ervelus.infrastructure.annotations.InjectByType;
 import com.ervelus.model.FriendListEntry;
 import com.ervelus.model.FriendStatus;
+import com.ervelus.model.Message;
 import com.ervelus.model.User;
 import com.ervelus.repository.FriendListRepository;
 import com.ervelus.repository.UserRepository;
+import com.ervelus.service.MessageService;
 import com.ervelus.service.UserService;
 import org.apache.commons.codec.digest.DigestUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class UserServiceImpl implements UserService {
@@ -29,23 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendFriendRequest(User user, User friend) {
-        FriendListEntry waitingEntry = new FriendListEntry(user, friend, FriendStatus.WAITING);
-        FriendListEntry incomingEntry = new FriendListEntry(friend, user, FriendStatus.INCOMING);
-        friendListRepository.saveFriendRequest(waitingEntry);
-        friendListRepository.saveFriendRequest(incomingEntry);
-    }
-
-    @Override
-    public void acceptFriendRequest(User user, User friend) {
-        FriendListEntry incomingEntry = new FriendListEntry(user, friend, FriendStatus.ACCEPTED);
-        FriendListEntry waitingEntry = new FriendListEntry(friend, user, FriendStatus.ACCEPTED);
-        friendListRepository.updateFriendRequest(incomingEntry);
-        friendListRepository.updateFriendRequest(waitingEntry);
-    }
-
-    @Override
-    public void declineFriendRequest(User user, User friend) {
-        friendListRepository.deleteFriendRequestByBothUsers(user, friend);
+    public boolean validateCredentials(String username, String password, User user) {
+        return username.equals(user.getUsername()) && user.getPassword().equals(DigestUtils.sha256Hex(password));
     }
 }

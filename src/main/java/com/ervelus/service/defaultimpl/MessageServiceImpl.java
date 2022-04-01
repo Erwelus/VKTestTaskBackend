@@ -6,6 +6,7 @@ import com.ervelus.model.Message;
 import com.ervelus.model.User;
 import com.ervelus.repository.MessageRepository;
 import com.ervelus.service.MessageService;
+import com.ervelus.service.UserService;
 
 import java.util.List;
 
@@ -23,4 +24,5 @@ public class MessageServiceImpl implements MessageService {
     public List<Message> loadChat(User userFrom, User userTo) {
         return messageRepository.loadChat(userFrom, userTo);
     }
+
 }

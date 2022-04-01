@@ -1,11 +1,13 @@
 package com.ervelus.service;
 
+import com.ervelus.model.FriendListEntry;
+import com.ervelus.model.Message;
 import com.ervelus.model.User;
+
+import java.util.List;
 
 public interface UserService {
     void register(User user);
     User findByUsername(String username);
-    void sendFriendRequest(User user, User friend);
-    void acceptFriendRequest(User user, User friend);
-    void declineFriendRequest(User user, User friend);
+    boolean validateCredentials(String username, String password, User user);
 }
