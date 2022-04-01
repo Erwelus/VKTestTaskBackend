@@ -5,6 +5,9 @@ import com.ervelus.infrastructure.annotations.Configuration;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 public class ServerSocketConfiguration {
@@ -18,5 +21,10 @@ public class ServerSocketConfiguration {
             System.exit(0);
         }
         return serverSocket;
+    }
+
+    @BeanProducer
+    public Map<String, Socket> getConnectionMap(){
+        return new ConcurrentHashMap<>();
     }
 }
