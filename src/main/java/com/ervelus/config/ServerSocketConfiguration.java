@@ -3,6 +3,7 @@ package com.ervelus.config;
 import com.ervelus.infrastructure.annotations.BeanProducer;
 import com.ervelus.infrastructure.annotations.Configuration;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -24,7 +25,7 @@ public class ServerSocketConfiguration {
     }
 
     @BeanProducer
-    public Map<String, Socket> getConnectionMap(){
+    public Map<String, BufferedWriter> getConnectionMap(){
         return new ConcurrentHashMap<>();
     }
 }

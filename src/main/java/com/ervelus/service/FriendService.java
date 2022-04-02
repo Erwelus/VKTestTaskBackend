@@ -1,7 +1,6 @@
 package com.ervelus.service;
 
 import com.ervelus.model.FriendListEntry;
-import com.ervelus.model.User;
 
 import java.util.List;
 

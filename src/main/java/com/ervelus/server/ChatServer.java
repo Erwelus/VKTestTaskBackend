@@ -2,6 +2,7 @@ package com.ervelus.server;
 
 import com.ervelus.infrastructure.annotations.InjectByType;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,7 +14,7 @@ public class ChatServer implements Runnable{
     @InjectByType
     private Dispatcher dispatcher;
     @InjectByType
-    private Map<String, Socket> connections;
+    private Map<String, BufferedWriter> connections;
 
 
     @Override

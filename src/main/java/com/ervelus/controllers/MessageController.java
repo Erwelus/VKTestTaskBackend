@@ -9,6 +9,7 @@ import com.ervelus.service.ChatService;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class MessageController {
@@ -17,7 +18,7 @@ public class MessageController {
     @InjectByType
     private TokenProvider tokenProvider;
 
-    public void send(String request, BufferedWriter out){
+    public void send(String request, BufferedWriter out, Map<String, BufferedWriter> connections){
         String[] reqArgs = request.split("&");
         String username = tokenProvider.getUsernameFromToken(tokenProvider.resolveToken(request));
         String friendName = reqArgs[2];
@@ -25,6 +26,7 @@ public class MessageController {
         try {
             if (chatService.sendMessageToFriend(username, friendName, text)) {
                 out.write(username+": "+text);
+                connections.get(friendName).write(username+": "+text);
             }else out.write("Failed to send a message: user not found");
         }catch (IOException e){
             System.err.println("Failed to send response to client");

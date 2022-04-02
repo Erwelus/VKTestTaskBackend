@@ -8,6 +8,7 @@ import com.ervelus.service.UserService;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.Map;
 
 @Component
 public class AuthenticationController {
@@ -16,7 +17,7 @@ public class AuthenticationController {
     @InjectByType
     private TokenProvider tokenProvider;
 
-    public void login(String request, BufferedWriter out){
+    public void login(String request, BufferedWriter out, Map<String, BufferedWriter> connections){
         String[] reqArgs = request.split("&");
         String username = reqArgs[1];
         String password = reqArgs[2];
@@ -24,6 +25,7 @@ public class AuthenticationController {
         try {
             if (user != null) {
                 if (userService.validateCredentials(username, password, user)) {
+                    connections.put(username, out);
                     out.write(tokenProvider.createToken(username));
                 } else out.write("Incorrect password");
             } else out.write("User not found");
@@ -33,7 +35,7 @@ public class AuthenticationController {
         }
     }
 
-    public void register(String request, BufferedWriter out){
+    public void register(String request, BufferedWriter out, Map<String, BufferedWriter> connections){
         String[] reqArgs = request.split("&");
         String username = reqArgs[1];
         String password = reqArgs[2];
@@ -41,6 +43,7 @@ public class AuthenticationController {
         try {
             if (user == null) {
                 userService.register(new User(username, password));
+                connections.put(username, out);
                 out.write(tokenProvider.createToken(username));
             } else out.write("User with such username already exists");
         }catch (IOException e){
