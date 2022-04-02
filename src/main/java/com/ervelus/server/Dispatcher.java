@@ -23,6 +23,8 @@ public class Dispatcher {
     private AuthenticationController authenticationController;
     @InjectByType
     private CommandResolver commandResolver;
+    @InjectByType
+    private CommandValidator validator;
 
 
     public void dispatch(Map<String, BufferedWriter> connections, Socket socket){
@@ -33,6 +35,11 @@ public class Dispatcher {
             while ((request = in.readLine()) != null){
                 System.out.println("---New request incoming---");
                 String command = commandResolver.resolve(request);
+                if (!validator.validate(request, command)){
+                    out.write("Incorrect use of command. Client-side error");
+                    out.newLine();
+                    out.flush();
+                }
                 switch (command) {
                     case "login": {
                         authenticationController.login(request, out, connections);
