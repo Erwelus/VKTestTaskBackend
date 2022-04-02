@@ -25,10 +25,13 @@ public class AuthenticationController {
         try {
             if (user != null) {
                 if (userService.validateCredentials(username, password, user)) {
+                    System.out.println("---User "+username+" logged in---");
                     connections.put(username, out);
-                    out.write(tokenProvider.createToken(username));
+                    out.write("Token: "+tokenProvider.createToken(username));
                 } else out.write("Incorrect password");
             } else out.write("User not found");
+            out.newLine();
+            out.flush();
         }catch (IOException e){
             System.err.println("Failed to send response to client");
             e.printStackTrace();
@@ -43,12 +46,21 @@ public class AuthenticationController {
         try {
             if (user == null) {
                 userService.register(new User(username, password));
+                System.out.println("---User "+username+" registered---");
                 connections.put(username, out);
-                out.write(tokenProvider.createToken(username));
+                out.write("Token: "+tokenProvider.createToken(username));
             } else out.write("User with such username already exists");
+            out.newLine();
+            out.flush();
         }catch (IOException e){
             System.err.println("Failed to send response to client");
             e.printStackTrace();
         }
+    }
+
+    public void exit(String request, Map<String, BufferedWriter> connections){
+        String username = tokenProvider.getUsernameFromToken(tokenProvider.resolveToken(request));
+        System.out.println("---User "+username+" disconnected---");
+        connections.remove(username);
     }
 }

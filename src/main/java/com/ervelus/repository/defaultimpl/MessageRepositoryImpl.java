@@ -2,6 +2,7 @@ package com.ervelus.repository.defaultimpl;
 
 import com.ervelus.infrastructure.annotations.Component;
 import com.ervelus.infrastructure.annotations.InjectByType;
+import com.ervelus.model.FriendListEntry;
 import com.ervelus.model.Message;
 import com.ervelus.model.User;
 import com.ervelus.repository.DBConnector;
@@ -36,19 +37,28 @@ public class MessageRepositoryImpl implements MessageRepository {
     public List<Message> loadChat(User userFrom, User userTo) {
         List<Message> messages = new ArrayList<>();
         try {
-            Statement statement = connector.getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery("select content from message_vk order by record_date desc limit 10");
+            PreparedStatement preparedStatement = connector.getConnection().prepareStatement(
+                    "select user_from, content from message_vk where user_from = ? and user_to = ? order by record_date desc limit 10");
+            preparedStatement.setInt(1, userFrom.getId());
+            preparedStatement.setInt(2, userTo.getId());
+            ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()){
                 Message message = new Message();
-                message.setUserFrom(userFrom);
-                message.setUserTo(userTo);
+                setUserFromById(resultSet.getInt("user_from"), message);
                 message.setContent(resultSet.getString("content"));
                 messages.add(message);
             }
-            statement.close();
+            preparedStatement.close();
         } catch (SQLException e) {
             System.err.println("Failed to load chat from DB");
         }
         return messages;
+    }
+
+    private void setUserFromById(Integer id, Message message) throws SQLException {
+        Statement statement = connector.getConnection().createStatement();
+        ResultSet userById = statement.executeQuery("select * from users_vk where id="+id);
+        userById.next();
+        message.setUserFrom(new User(userById.getInt("id"), userById.getString("username"), userById.getString("password")));
     }
 }

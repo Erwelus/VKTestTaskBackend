@@ -50,23 +50,35 @@ public class FriendServiceImpl implements FriendService {
         User friend = userService.findByUsername(friendName);
         if (user!=null && friend !=null) {
             friendListRepository.deleteFriendRequestByBothUsers(user, friend);
+            friendListRepository.deleteFriendRequestByBothUsers(friend, user);
             return true;
         }else return false;
     }
 
     @Override
-    public List<String> getFriendNamesList(String username) {
-        List<FriendListEntry> friendList = getFriendList(username);
-        if (friendList == null) return null;
-        List<String> friendNameList = new ArrayList<>();
-        for (FriendListEntry entry: friendList) {
-            friendNameList.add(entry.getFriend().getUsername());
+    public List<String> getFriendList(String username) {
+        List<FriendListEntry> friendEntryList = getFriendEntryList(username);
+        if (friendEntryList == null) return null;
+        List<String> friendList = new ArrayList<>();
+        for (FriendListEntry entry: friendEntryList) {
+            friendList.add(entry.getFriend().getUsername()+": "+entry.getStatus());
         }
-        return friendNameList;
+        return friendList;
     }
 
     @Override
-    public List<FriendListEntry> getFriendList(String username) {
+    public List<String> getFriendNameList(String username) {
+        List<FriendListEntry> friendEntryList = getFriendEntryList(username);
+        if (friendEntryList == null) return null;
+        List<String> friendList = new ArrayList<>();
+        for (FriendListEntry entry: friendEntryList) {
+            friendList.add(entry.getFriend().getUsername());
+        }
+        return friendList;
+    }
+
+    @Override
+    public List<FriendListEntry> getFriendEntryList(String username) {
         User user = userService.findByUsername(username);
         if (user!=null) {
             if (user.getFriends() == null) {

@@ -34,6 +34,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findFriendByUsername(User owner, String username) {
+        return null;
+    }
+
+    @Override
     public boolean validateCredentials(String username, String password, User user) {
         return username.equals(user.getUsername()) && user.getPassword().equals(DigestUtils.sha256Hex(password));
     }

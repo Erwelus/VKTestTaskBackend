@@ -25,9 +25,17 @@ public class MessageController {
         String text = reqArgs[3];
         try {
             if (chatService.sendMessageToFriend(username, friendName, text)) {
-                out.write(username+": "+text);
-                connections.get(friendName).write(username+": "+text);
-            }else out.write("Failed to send a message: user not found");
+                out.write(username+" wrote: "+text);
+                if (connections.containsKey(friendName)) {
+                    connections.get(friendName).write(username + " wrote: " + text);
+                    connections.get(friendName).newLine();
+                    connections.get(friendName).flush();
+                }
+            }else {
+                out.write("Failed to send a message: friend not found");
+            }
+            out.newLine();
+            out.flush();
         }catch (IOException e){
             System.err.println("Failed to send response to client");
             e.printStackTrace();
@@ -40,14 +48,18 @@ public class MessageController {
         String friendName = reqArgs[2];
         List<Message> messages = chatService.getChatWithFriend(username, friendName);
         StringBuilder response = new StringBuilder();
-        if (messages==null || messages.isEmpty()){
+        if(messages == null){
+            response.append("Friend not found");
+        }else if (messages.isEmpty()) {
             response.append("This is the beginning of your chat with ").append(friendName);
         }else {
-            messages.forEach(message -> response.append(message.getUserFrom())
+            messages.forEach(message -> response.append(message.getUserFrom().getUsername())
                     .append(": ").append(message.getContent()).append("\n"));
         }
         try {
             out.write(response.toString());
+            out.newLine();
+            out.flush();
         }catch (IOException e){
             System.err.println("Failed to send response to client");
             e.printStackTrace();

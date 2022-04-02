@@ -66,11 +66,11 @@ public class FriendListRepositoryImpl implements FriendListRepository {
         List<FriendListEntry> entryList = new ArrayList<>();
         try {
             Statement statement = connector.getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery("select * from friend_vk");
+            ResultSet resultSet = statement.executeQuery("select * from friend_vk where owner = "+user.getUsername());
             while (resultSet.next()){
                 FriendListEntry entry = new FriendListEntry();
                 entry.setOwner(user);
-                setFriendById(statement, resultSet.getInt("id"), entry);
+                setFriendById(resultSet.getInt("friend"), entry);
                 entry.setStatus(FriendStatus.valueOf(resultSet.getString("status").toUpperCase()));
                 entryList.add(entry);
             }
@@ -81,7 +81,8 @@ public class FriendListRepositoryImpl implements FriendListRepository {
         return entryList;
     }
 
-    private void setFriendById(Statement statement, Integer id, FriendListEntry entry) throws SQLException {
+    private void setFriendById(Integer id, FriendListEntry entry) throws SQLException {
+        Statement statement = connector.getConnection().createStatement();
         ResultSet userById = statement.executeQuery("select * from users_vk where id="+id);
         userById.next();
         entry.setFriend(new User(userById.getInt("id"), userById.getString("username"), userById.getString("password")));

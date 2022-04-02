@@ -8,6 +8,7 @@ import com.ervelus.repository.MessageRepository;
 import com.ervelus.service.MessageService;
 import com.ervelus.service.UserService;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -22,7 +23,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<Message> loadChat(User userFrom, User userTo) {
-        return messageRepository.loadChat(userFrom, userTo);
+        List<Message> res = messageRepository.loadChat(userFrom, userTo);
+        Collections.reverse(res);
+        return res;
     }
 
 }
