@@ -7,21 +7,25 @@ import com.ervelus.model.User;
 import com.ervelus.repository.FriendListRepository;
 import com.ervelus.service.FriendService;
 import com.ervelus.service.UserService;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FriendServiceImpl implements FriendService {
     @InjectByType
+    @Setter
     private FriendListRepository friendListRepository;
     @InjectByType
+    @Setter
     private UserService userService;
 
     @Override
     public boolean sendFriendRequest(String username, String friendName) {
         User user = userService.findByUsername(username);
         User friend = userService.findByUsername(friendName);
-        if (user!=null && friend !=null){
+        List<String> friendNameList = getFriendNameList(username);
+        if (user!=null && friend !=null && !friendNameList.contains(friendName)) {
             FriendListEntry waitingEntry = new FriendListEntry(user, friend, FriendStatus.WAITING);
             FriendListEntry incomingEntry = new FriendListEntry(friend, user, FriendStatus.INCOMING);
             friendListRepository.saveFriendRequest(waitingEntry);
@@ -35,7 +39,11 @@ public class FriendServiceImpl implements FriendService {
     public boolean acceptFriendRequest(String username, String friendName) {
         User user = userService.findByUsername(username);
         User friend = userService.findByUsername(friendName);
-        if (user!=null && friend !=null) {
+        List<FriendListEntry> friendEntryList = getFriendEntryList(username);
+        List<String> friendNameList = getNameListFromEntryList(friendEntryList);
+        if (user!=null && friend !=null &&
+                friendNameList.contains(friendName) &&
+                friendEntryList.get(friendNameList.indexOf(friendName)).getStatus().equals(FriendStatus.INCOMING)) {
             FriendListEntry incomingEntry = new FriendListEntry(user, friend, FriendStatus.ACCEPTED);
             FriendListEntry waitingEntry = new FriendListEntry(friend, user, FriendStatus.ACCEPTED);
             friendListRepository.updateFriendRequest(incomingEntry);
@@ -48,7 +56,10 @@ public class FriendServiceImpl implements FriendService {
     public boolean rejectFriendRequest(String username, String friendName) {
         User user = userService.findByUsername(username);
         User friend = userService.findByUsername(friendName);
-        if (user!=null && friend !=null) {
+        List<FriendListEntry> friendEntryList = getFriendEntryList(username);
+        List<String> friendNameList = getNameListFromEntryList(friendEntryList);
+        if (user!=null && friend !=null && friendNameList.contains(friendName) &&
+                friendEntryList.get(friendNameList.indexOf(friendName)).getStatus().equals(FriendStatus.INCOMING)) {
             friendListRepository.deleteFriendRequestByBothUsers(user, friend);
             friendListRepository.deleteFriendRequestByBothUsers(friend, user);
             return true;
@@ -70,21 +81,21 @@ public class FriendServiceImpl implements FriendService {
     public List<String> getFriendNameList(String username) {
         List<FriendListEntry> friendEntryList = getFriendEntryList(username);
         if (friendEntryList == null) return null;
-        List<String> friendList = new ArrayList<>();
-        for (FriendListEntry entry: friendEntryList) {
-            friendList.add(entry.getFriend().getUsername());
-        }
-        return friendList;
+        return getNameListFromEntryList(friendEntryList);
     }
 
     @Override
     public List<FriendListEntry> getFriendEntryList(String username) {
         User user = userService.findByUsername(username);
         if (user!=null) {
-            if (user.getFriends() == null) {
-                user.setFriends(friendListRepository.getFriendList(user));
-            }
+            user.setFriends(friendListRepository.getFriendList(user));
             return user.getFriends();
         }else return null;
+    }
+
+    private List<String> getNameListFromEntryList(List<FriendListEntry> entryList){
+        List<String> friendList = new ArrayList<>();
+        entryList.forEach(entry -> friendList.add(entry.getFriend().getUsername()));
+        return friendList;
     }
 }

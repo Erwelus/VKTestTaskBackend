@@ -6,7 +6,7 @@ import com.ervelus.model.Message;
 import com.ervelus.model.User;
 import com.ervelus.repository.MessageRepository;
 import com.ervelus.service.MessageService;
-import com.ervelus.service.UserService;
+import lombok.Setter;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.List;
 @Component
 public class MessageServiceImpl implements MessageService {
     @InjectByType
+    @Setter
     private MessageRepository messageRepository;
 
     @Override
@@ -24,7 +25,9 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<Message> loadChat(User userFrom, User userTo) {
         List<Message> res = messageRepository.loadChat(userFrom, userTo);
-        Collections.reverse(res);
+        if (res != null && res.size() > 1) {
+            Collections.reverse(res);
+        }
         return res;
     }
 
