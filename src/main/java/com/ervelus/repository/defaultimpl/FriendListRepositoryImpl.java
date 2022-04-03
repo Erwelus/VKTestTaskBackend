@@ -7,6 +7,7 @@ import com.ervelus.model.FriendStatus;
 import com.ervelus.model.User;
 import com.ervelus.repository.DBConnector;
 import com.ervelus.repository.FriendListRepository;
+import lombok.Setter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,6 +19,7 @@ import java.util.List;
 @Component
 public class FriendListRepositoryImpl implements FriendListRepository {
     @InjectByType
+    @Setter
     private DBConnector connector;
 
     @Override
@@ -29,7 +31,7 @@ public class FriendListRepositoryImpl implements FriendListRepository {
             preparedStatement.setString(3, entry.getStatus().toString());
             preparedStatement.executeUpdate();
             preparedStatement.close();
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.err.println("Failed to save friend request into DB");
         }
     }
@@ -43,7 +45,7 @@ public class FriendListRepositoryImpl implements FriendListRepository {
             preparedStatement.setInt(3, entry.getFriend().getId());
             preparedStatement.executeUpdate();
             preparedStatement.close();
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.err.println("Failed to update friend request at DB");
         }
     }
@@ -56,7 +58,7 @@ public class FriendListRepositoryImpl implements FriendListRepository {
             preparedStatement.setInt(2, userTo.getId());
             preparedStatement.executeUpdate();
             preparedStatement.close();
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.err.println("Failed to delete friend request from DB");
         }
     }
@@ -65,8 +67,9 @@ public class FriendListRepositoryImpl implements FriendListRepository {
     public List<FriendListEntry> getFriendList(User user) {
         List<FriendListEntry> entryList = new ArrayList<>();
         try {
-            Statement statement = connector.getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery("select * from friend_vk where owner = "+user.getUsername());
+            PreparedStatement preparedStatement = connector.getConnection().prepareStatement("select * from friend_vk where owner = ?");
+            preparedStatement.setInt(1, user.getId());
+            ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()){
                 FriendListEntry entry = new FriendListEntry();
                 entry.setOwner(user);
@@ -74,8 +77,8 @@ public class FriendListRepositoryImpl implements FriendListRepository {
                 entry.setStatus(FriendStatus.valueOf(resultSet.getString("status").toUpperCase()));
                 entryList.add(entry);
             }
-            statement.close();
-        } catch (SQLException e) {
+            preparedStatement.close();
+        } catch (SQLException | NullPointerException e) {
             System.err.println("Failed to load friend list from DB");
         }
         return entryList;

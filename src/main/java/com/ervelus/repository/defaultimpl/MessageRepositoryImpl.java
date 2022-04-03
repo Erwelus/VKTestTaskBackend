@@ -2,11 +2,11 @@ package com.ervelus.repository.defaultimpl;
 
 import com.ervelus.infrastructure.annotations.Component;
 import com.ervelus.infrastructure.annotations.InjectByType;
-import com.ervelus.model.FriendListEntry;
 import com.ervelus.model.Message;
 import com.ervelus.model.User;
 import com.ervelus.repository.DBConnector;
 import com.ervelus.repository.MessageRepository;
+import lombok.Setter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,6 +18,7 @@ import java.util.List;
 @Component
 public class MessageRepositoryImpl implements MessageRepository {
     @InjectByType
+    @Setter
     private DBConnector connector;
     @Override
     public void save(Message message) {
@@ -28,7 +29,7 @@ public class MessageRepositoryImpl implements MessageRepository {
             preparedStatement.setString(3, message.getContent());
             preparedStatement.executeUpdate();
             preparedStatement.close();
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.err.println("Failed to save message into DB");
         }
     }
@@ -49,7 +50,7 @@ public class MessageRepositoryImpl implements MessageRepository {
                 messages.add(message);
             }
             preparedStatement.close();
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.err.println("Failed to load chat from DB");
         }
         return messages;

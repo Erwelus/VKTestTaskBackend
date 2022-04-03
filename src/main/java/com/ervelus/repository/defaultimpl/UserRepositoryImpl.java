@@ -5,6 +5,7 @@ import com.ervelus.infrastructure.annotations.InjectByType;
 import com.ervelus.model.User;
 import com.ervelus.repository.DBConnector;
 import com.ervelus.repository.UserRepository;
+import lombok.Setter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 @Component
 public class UserRepositoryImpl implements UserRepository {
     @InjectByType
+    @Setter
     private DBConnector connector;
     @Override
     public void save(User user) {
@@ -22,7 +24,7 @@ public class UserRepositoryImpl implements UserRepository {
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.executeUpdate();
             preparedStatement.close();
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.err.println("Failed to save user into DB");
         }
     }

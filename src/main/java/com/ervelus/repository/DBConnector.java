@@ -3,6 +3,7 @@ package com.ervelus.repository;
 import com.ervelus.infrastructure.annotations.Component;
 import com.ervelus.infrastructure.annotations.InjectProperty;
 import com.ervelus.infrastructure.annotations.PostConstruct;
+import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,6 +17,7 @@ public class DBConnector {
     private String dbUsername;
     @InjectProperty
     private String dbPassword;
+    @Setter
     private Connection connection;
 
     @PostConstruct
