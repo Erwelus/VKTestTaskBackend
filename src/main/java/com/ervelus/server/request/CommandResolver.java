@@ -1,11 +1,13 @@
-package com.ervelus.server;
+package com.ervelus.server.request;
 
 import com.ervelus.infrastructure.annotations.Component;
 
 @Component
 public class CommandResolver {
     public String resolve(String request){
-        if (request.startsWith("login") || request.startsWith("register") || request.startsWith("exit")){
+        if (request.toLowerCase().startsWith("login") ||
+                request.toLowerCase().startsWith("register") ||
+                request.toLowerCase().startsWith("exit")){
             return request.split("&")[0].toLowerCase();
         }else return request.split("&")[1].toLowerCase();
     }

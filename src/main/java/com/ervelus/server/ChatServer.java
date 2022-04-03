@@ -1,6 +1,7 @@
 package com.ervelus.server;
 
 import com.ervelus.infrastructure.annotations.InjectByType;
+import lombok.Setter;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -10,10 +11,13 @@ import java.util.Map;
 
 public class ChatServer implements Runnable{
     @InjectByType
+    @Setter
     private ServerSocket serverSocket;
     @InjectByType
+    @Setter
     private Dispatcher dispatcher;
     @InjectByType
+    @Setter
     private Map<String, BufferedWriter> connections;
 
 
