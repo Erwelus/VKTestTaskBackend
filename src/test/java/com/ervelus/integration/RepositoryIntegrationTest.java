@@ -56,9 +56,7 @@ public class RepositoryIntegrationTest {
     @BeforeAll
     static void setUp() throws IOException, SQLException {
         connector = new DBConnector();
-        testDBURL = "jdbc:postgresql://localhost:5432/studs";
-        testDBUsername = "s285583";
-        testDBPassword = "nvn024";
+
         connector.setConnection(DriverManager.getConnection(testDBURL, testDBUsername, testDBPassword));
         server = new ChatServer();
         ServerSocket serverSocket = new ServerSocket(3006);
