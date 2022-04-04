@@ -12,14 +12,31 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Default implementation of UserService.
+ * Is annotated with @Component, thus will be saved in context
+ */
 public class FriendServiceImpl implements FriendService {
+    /**
+     * Instance of FriendListRepository for persisting friend requests.
+     * Setter is only used for tests, is automatically injected
+     */
     @InjectByType
     @Setter
     private FriendListRepository friendListRepository;
+    /**
+     * Instance of UserService for getting users by their usernames.
+     * Setter is only used for tests, is automatically injected
+     */
     @InjectByType
     @Setter
     private UserService userService;
 
+    /**
+     * Sends friend request, if users are not already friends and none of the args is null
+     * @param username who sent the request
+     * @param friendName who should receive the request
+     */
     @Override
     public boolean sendFriendRequest(String username, String friendName) {
         User user = userService.findByUsername(username);
@@ -35,6 +52,11 @@ public class FriendServiceImpl implements FriendService {
 
     }
 
+    /**
+     * Accepts incoming friend request, if there is one and none of the args is null
+     * @param username who accepted the request
+     * @param friendName who sent the request
+     */
     @Override
     public boolean acceptFriendRequest(String username, String friendName) {
         User user = userService.findByUsername(username);
@@ -52,6 +74,12 @@ public class FriendServiceImpl implements FriendService {
         }else return false;
     }
 
+    /**
+     * Rejects incoming friend request, if there is one and none of the args is null
+     * @param username who rejected the request
+     * @param friendName who sent the request
+     * @return
+     */
     @Override
     public boolean rejectFriendRequest(String username, String friendName) {
         User user = userService.findByUsername(username);
@@ -66,6 +94,10 @@ public class FriendServiceImpl implements FriendService {
         }else return false;
     }
 
+    /**
+     * Returns friend list of given user as (Friend: status). If user is null - returns null.
+     * @param username owner of friend list
+     */
     @Override
     public List<String> getFriendList(String username) {
         List<FriendListEntry> friendEntryList = getFriendEntryList(username);
@@ -76,14 +108,20 @@ public class FriendServiceImpl implements FriendService {
         }
         return friendList;
     }
-
+    /**
+     * Returns names of friends of a given user. If user is null - returns null.
+     * @param username owner of friend list
+     */
     @Override
     public List<String> getFriendNameList(String username) {
         List<FriendListEntry> friendEntryList = getFriendEntryList(username);
         if (friendEntryList == null) return null;
         return getNameListFromEntryList(friendEntryList);
     }
-
+    /**
+     * Returns list of friend requests as entities. If user is null - returns null.
+     * @param username owner of friend list
+     */
     @Override
     public List<FriendListEntry> getFriendEntryList(String username) {
         User user = userService.findByUsername(username);
@@ -93,6 +131,9 @@ public class FriendServiceImpl implements FriendService {
         }else return null;
     }
 
+    /**
+     * Util method for getting usernames of friends from entries
+     */
     private List<String> getNameListFromEntryList(List<FriendListEntry> entryList){
         List<String> friendList = new ArrayList<>();
         entryList.forEach(entry -> friendList.add(entry.getFriend().getUsername()));

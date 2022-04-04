@@ -12,15 +12,40 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class contains logic of handling requests related to chatting
+ * handles <b>send</b> and <b>chat</b> requests
+ * Is annotated with @Component, thus will be saved in context
+ * @see Component
+ */
 @Component
 public class MessageController {
+    /**
+     * Is injected automatically at the instantiation of the class
+     * Used for business logic related to chatting process
+     * Setter is only used for tests
+     */
     @InjectByType
     @Setter
     private ChatService chatService;
+    /**
+     * Is injected automatically at the instantiation of the class
+     * Used for getting current user from token
+     * Setter is only used for tests
+     */
     @InjectByType
     @Setter
     private TokenProvider tokenProvider;
 
+    /**
+     * Handler of <b>send</b> request
+     * sends a message to another user, if they are friends
+     * otherwise, user will be notified
+     * If another user is online, they will receive the message
+     * otherwise, they will be able to see the message in chat history
+     * @param request Incoming request
+     * @param out Writer used to send response to the client
+     */
     public void send(String request, BufferedWriter out, Map<String, BufferedWriter> connections){
         try {
             String[] reqArgs = request.split("&");
@@ -47,6 +72,13 @@ public class MessageController {
         }
     }
 
+    /**
+     * Handler of <b>chat</b> request
+     * Sends user last 10 messages of their chat with a friend
+     * If the chat is empty, user will be notified
+     * @param request Incoming request
+     * @param out Writer used to send response to the client
+     */
     public void getDialog(String request, BufferedWriter out){
         try {
             String[] reqArgs = request.split("&");

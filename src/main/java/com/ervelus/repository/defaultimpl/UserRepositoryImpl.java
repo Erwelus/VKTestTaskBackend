@@ -11,11 +11,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Default implementation of UserRepository.
+ * Annotated with @Component, used for injection into services
+ * Provides access for SQL DB
+ */
 @Component
 public class UserRepositoryImpl implements UserRepository {
+    /**
+     * Provider of connection to DB
+     */
     @InjectByType
     @Setter
     private DBConnector connector;
+
+    /**
+     * Saves user into DB, business logic mistakes as null user or non-unique username will not be saved
+     */
     @Override
     public void save(User user) {
         try {
@@ -29,6 +41,10 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
+    /**
+     * Loads user from DB by their username, should be unique
+     * @return User if is present, null otherwise
+     */
     @Override
     public User findUserByUsername(String username) {
         User user = null;

@@ -14,12 +14,24 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Default implementation of MessageRepository.
+ * Annotated with @Component, used for injection into services
+ * Provides access for SQL DB
+ */
 @Component
 public class MessageRepositoryImpl implements MessageRepository {
+    /**
+     * Provider of connection to DB
+     */
     @InjectByType
     @Setter
     private DBConnector connector;
+
+    /**
+     * Saves message into DB, business logic mistakes as null message
+     * or messages between non-existing users will not be saved
+     */
     @Override
     public void save(Message message) {
         try {
@@ -34,6 +46,10 @@ public class MessageRepositoryImpl implements MessageRepository {
         }
     }
 
+    /**
+     * Loads last 10 messages between two users
+     * @return List of last messages, empty list if no messages present or business logic mistakes
+     */
     @Override
     public List<Message> loadChat(User userFrom, User userTo) {
         List<Message> messages = new ArrayList<>();

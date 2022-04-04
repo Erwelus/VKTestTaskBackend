@@ -12,9 +12,20 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * Object configurator, used for injecting values from property files
+ * Requires @InjectProperty to be called
+ * @see InjectProperty
+ */
 public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigurator{
+    /**
+     * Storage of values from property file
+     */
     private Map<String, String> propertiesMap;
 
+    /**
+     * @throws FileNotFoundException when property file (application.properties) not found
+     */
     public InjectPropertyAnnotationObjectConfigurator() throws FileNotFoundException {
         String path = ClassLoader.getSystemClassLoader().getResource("application.properties").getPath();
         Stream<String> lines = new BufferedReader(new FileReader(path)).lines();

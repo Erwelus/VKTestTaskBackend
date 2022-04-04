@@ -17,33 +17,75 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Map;
 
+/**
+ * Default implementation of Dispatcher.
+ * Performs dispatching of the incoming requests and invokes corresponding methods of controllers
+ */
 @Component
 public class RequestDispatcher implements Dispatcher {
+    /**
+     * Filter for requests, used for authentication.
+     * Setter is only used for tests, is automatically injected
+     */
     @InjectByType
     @Setter
     private SecurityFilter securityFilter;
+    /**
+     * Controller for requests related to chatting.
+     * Setter is only used for tests, is automatically injected
+     */
     @InjectByType
     @Setter
     private MessageController messageController;
+    /**
+     * Controller for requests related to friend managing.
+     * Setter is only used for tests, is automatically injected
+     */
     @InjectByType
     @Setter
     private FriendController friendController;
+    /**
+     * Controller for requests related to authentication.
+     * Setter is only used for tests, is automatically injected
+     */
     @InjectByType
     @Setter
     private AuthenticationController authenticationController;
+    /**
+     * Resolver for incoming requests.
+     * Setter is only used for tests, is automatically injected
+     */
     @InjectByType
     @Setter
     private Resolver resolver;
+    /**
+     * Validator for incoming requests.
+     * Setter is only used for tests, is automatically injected
+     */
     @InjectByType
     @Setter
     private Validator validator;
 
+    /**
+     * Getter is only used for tests
+     */
     @Getter
     private BufferedWriter out;
+    /**
+     * Getter is only used for tests
+     */
     @Getter
     private BufferedReader in;
 
-
+    /**
+     * Dispatching incoming requests.
+     * Invalid requests are ignored.
+     * Valid requests are processed by corresponding controller.
+     * Works, while client is connected.
+     * SocketException is thrown when client incorrectly disconnected (not by using exit, lost connection e.g.), thus ignored
+     * @param connections map of open connections
+     * @param socket Socket for connecting with a client, who sent a request
+     */
     public void dispatch(Map<String, BufferedWriter> connections, Socket socket){
         try {
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));

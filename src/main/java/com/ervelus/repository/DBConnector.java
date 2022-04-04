@@ -9,6 +9,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Class used for connecting to the DB
+ * Provides connection to DB for repositories
+ * Requires info about DB in property file
+ * Is annotated with @Component for injecting into repositories
+ */
 @Component
 public class DBConnector {
     @InjectProperty
@@ -20,6 +26,10 @@ public class DBConnector {
     @Setter
     private Connection connection;
 
+    /**
+     * Method for connecting to DB
+     * Invoked automatically after properties set
+     */
     @PostConstruct
     public void init(){
         try {
@@ -30,5 +40,8 @@ public class DBConnector {
         }
     }
 
+    /**
+     * Getter for the DB connection, used by repositories
+     */
     public Connection getConnection(){return this.connection;}
 }

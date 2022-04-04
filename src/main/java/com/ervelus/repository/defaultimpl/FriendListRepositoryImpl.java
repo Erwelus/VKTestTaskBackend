@@ -15,13 +15,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Default implementation of FriendListRepository.
+ * Annotated with @Component, used for injection into services
+ * Provides access for SQL DB
+ */
 @Component
 public class FriendListRepositoryImpl implements FriendListRepository {
+    /**
+     * Provider of connection to DB
+     */
     @InjectByType
     @Setter
     private DBConnector connector;
-
+    /**
+     * Saves friend request into DB, business logic mistakes as null will not be saved
+     */
     @Override
     public void saveFriendRequest(FriendListEntry entry) {
         try {
@@ -36,6 +45,9 @@ public class FriendListRepositoryImpl implements FriendListRepository {
         }
     }
 
+    /**
+     * Updates status of friend request
+     */
     @Override
     public void updateFriendRequest(FriendListEntry entry) {
         try {
@@ -50,6 +62,9 @@ public class FriendListRepositoryImpl implements FriendListRepository {
         }
     }
 
+    /**
+     * Deletes friend request from DB
+     */
     @Override
     public void deleteFriendRequestByBothUsers(User userFrom, User userTo) {
         try {
@@ -63,6 +78,10 @@ public class FriendListRepositoryImpl implements FriendListRepository {
         }
     }
 
+    /**
+     * Loads friend list of given user
+     * @return Friend list, empty list if no friends or business logic mistakes
+     */
     @Override
     public List<FriendListEntry> getFriendList(User user) {
         List<FriendListEntry> entryList = new ArrayList<>();
@@ -84,6 +103,12 @@ public class FriendListRepositoryImpl implements FriendListRepository {
         return entryList;
     }
 
+    /**
+     * Util method for getting user for getting user from DB by their ID
+     * @param id id of the friend
+     * @param entry FriendListEntry which requires friend to be set
+     * @throws SQLException when user is not present in DB (does not happen due to DB restrictions)
+     */
     private void setFriendById(Integer id, FriendListEntry entry) throws SQLException {
         Statement statement = connector.getConnection().createStatement();
         ResultSet userById = statement.executeQuery("select * from users_vk where id="+id);

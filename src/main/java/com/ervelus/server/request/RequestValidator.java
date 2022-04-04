@@ -5,8 +5,16 @@ import com.ervelus.server.Validator;
 
 import java.util.Objects;
 
+/**
+ * Default implementation of validator
+ */
 @Component
 public class RequestValidator implements Validator {
+    /**
+     * Validates request based on used separator, number of arguments and position of the command
+     * @param request incoming request
+     * @param command command that this request contains
+     */
     public boolean validate(String request, String command){
         String[] commandWithArgs = request.split("&");
         switch (command){

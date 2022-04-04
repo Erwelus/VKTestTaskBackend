@@ -5,6 +5,13 @@ import com.ervelus.infrastructure.annotations.InjectByType;
 
 import java.lang.reflect.Field;
 
+/**
+ * Object Configurer for Dependency injection.
+ * Injects a bean of given interface/class into the given field
+ * If bean is not present in context - will be created using default constructor
+ * Requires @InjectByType to be called
+ * @see InjectByType
+ */
 public class InjectByTypeAnnotationObjectConfigurator implements ObjectConfigurator{
     @Override
     public void configure(Object t, ApplicationContext context) {

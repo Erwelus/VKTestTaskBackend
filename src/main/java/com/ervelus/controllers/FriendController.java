@@ -11,15 +11,37 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class contains logic of handling requests related to managing friends of user
+ * handles <b>friends</b>, <b>add</b>, <b>accept</b> and <b>reject</b> requests
+ * Is annotated with @Component, thus will be saved in context
+ * @see Component
+ */
 @Component
 public class FriendController {
+    /**
+     * Is injected automatically at the instantiation of the class
+     * Used for business logic related to managing friends process
+     * Setter is only used for tests
+     */
     @InjectByType
     @Setter
     private FriendService friendService;
+    /**
+     * Is injected automatically at the instantiation of the class
+     * Used for getting current user from token
+     * Setter is only used for tests
+     */
     @InjectByType
     @Setter
     private TokenProvider tokenProvider;
 
+    /**
+     * Handler of <b>friends</b> request
+     * sends user his friend list or, if empty, inform them about it
+     * @param request Incoming request
+     * @param out Writer used to send response to the client
+     */
     public void getFriendList(String request, BufferedWriter out){
         try {
             String username = tokenProvider.getUsernameFromToken(tokenProvider.resolveToken(request));
@@ -40,7 +62,13 @@ public class FriendController {
             System.err.println("Validation error");
         }
     }
-
+    /**
+     * Handler of <b>add</b> request
+     * sends another user a friend request
+     * If online, user will receive notification, otherwise will see incoming request in their friend list
+     * @param request Incoming request
+     * @param out Writer used to send response to the client
+     */
     public void addFriend(String request, BufferedWriter out, Map<String, BufferedWriter> connections){
         try {
             String[] reqArgs = request.split("&");
@@ -67,6 +95,13 @@ public class FriendController {
         }
     }
 
+    /**
+     * Handler of <b>accept</b> request
+     * accepts another user's friend request
+     * If online, user will receive notification, otherwise will see new friend in their friend list
+     * @param request Incoming request
+     * @param out Writer used to send response to the client
+     */
     public void acceptFriendRequest(String request, BufferedWriter out, Map<String, BufferedWriter> connections){
         try {
             String[] reqArgs = request.split("&");
@@ -95,6 +130,14 @@ public class FriendController {
         }
     }
 
+    /**
+     * Handler of <b>reject</b> request
+     * rejects another user's friend request
+     * If online, user will receive notification
+     * Anyway, user will be removed from friend list
+     * @param request Incoming request
+     * @param out Writer used to send response to the client
+     */
     public void rejectFriendRequest(String request, BufferedWriter out, Map<String, BufferedWriter> connections){
         try {
             String[] reqArgs = request.split("&");

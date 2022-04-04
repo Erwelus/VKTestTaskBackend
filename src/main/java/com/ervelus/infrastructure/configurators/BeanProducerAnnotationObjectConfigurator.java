@@ -6,6 +6,12 @@ import com.ervelus.infrastructure.annotations.BeanProducer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * Object Configurator used for instantiating beans at application start
+ * Used when default constructor is not enough
+ * Requires @BeanProducer
+ * @see BeanProducer
+ */
 public class BeanProducerAnnotationObjectConfigurator implements ObjectConfigurator{
     @Override
     public void configure(Object t, ApplicationContext context) {
