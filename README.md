@@ -1,7 +1,7 @@
-##Web chat for VK Core internship
+## Web chat for VK Core internship
 Usage: start the server, start the client and run your commands.
 To start the server, you need to specify database data in _application.properties_
-###Command list:
+### Command list:
 * _login \[username] \[password]_
 * _register \[username] \[password]_
 * _friends_
