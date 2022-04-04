@@ -9,6 +9,7 @@ import com.ervelus.security.SecurityFilter;
 import com.ervelus.server.Dispatcher;
 import com.ervelus.server.Resolver;
 import com.ervelus.server.Validator;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.io.*;
@@ -32,20 +33,25 @@ public class RequestDispatcher implements Dispatcher {
     private AuthenticationController authenticationController;
     @InjectByType
     @Setter
-    private Resolver commandResolver;
+    private Resolver resolver;
     @InjectByType
     @Setter
     private Validator validator;
 
+    @Getter
+    private BufferedWriter out;
+    @Getter
+    private BufferedReader in;
+
 
     public void dispatch(Map<String, BufferedWriter> connections, Socket socket){
         try {
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String request;
             while ((request = in.readLine()) != null){
                 System.out.println("---New request incoming---");
-                String command = commandResolver.resolve(request);
+                String command = resolver.resolve(request);
                 if (!validator.validate(request, command)){
                     out.write("Incorrect use of command. Client-side error");
                     out.newLine();

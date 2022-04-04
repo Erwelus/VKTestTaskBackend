@@ -1,9 +1,10 @@
 package com.ervelus.server.request;
 
 import com.ervelus.infrastructure.annotations.Component;
+import com.ervelus.server.Resolver;
 
 @Component
-public class CommandResolver {
+public class CommandResolver implements Resolver {
     public String resolve(String request){
         if (request.toLowerCase().startsWith("login") ||
                 request.toLowerCase().startsWith("register") ||
