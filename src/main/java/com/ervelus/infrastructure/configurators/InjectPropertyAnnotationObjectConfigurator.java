@@ -3,9 +3,7 @@ package com.ervelus.infrastructure.configurators;
 import com.ervelus.infrastructure.ApplicationContext;
 import com.ervelus.infrastructure.annotations.InjectProperty;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -27,8 +25,8 @@ public class InjectPropertyAnnotationObjectConfigurator implements ObjectConfigu
      * @throws FileNotFoundException when property file (application.properties) not found
      */
     public InjectPropertyAnnotationObjectConfigurator() throws FileNotFoundException {
-        String path = ClassLoader.getSystemClassLoader().getResource("application.properties").getPath();
-        Stream<String> lines = new BufferedReader(new FileReader(path)).lines();
+        InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("application.properties");
+        Stream<String> lines = new BufferedReader(new InputStreamReader(stream)).lines();
         propertiesMap = lines.map(line -> line.split("=")).collect(toMap(arr -> arr[0].trim(), arr -> arr[1].trim()));
     }
     @Override
